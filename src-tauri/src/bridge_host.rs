@@ -10,16 +10,25 @@ use std::sync::mpsc;
 use std::time::Duration;
 
 pub const HOST_NAME: &str = "com.adm.downloader";
-const MANIFEST_NAME: &str = "com.adm.downloader.json";
+const EDGE_MANIFEST_NAME: &str = "com.adm.downloader.edge.json";
+const CHROME_MANIFEST_NAME: &str = "com.adm.downloader.chrome.json";
 pub const PORTS: [u16; 3] = [51837, 51838, 51839];
 
 /// 与扩展里的 ipc_token.txt 一致；扩展已经写好并固定使用这个值
 pub const IPC_TOKEN: &str = "2fc7688c7084b41f3f188f2daa21f9f09866a241f54859d4c026f07979aa5268";
 
-pub fn manifest_path() -> Result<PathBuf, String> {
+fn manifest_file_name(browser: &str) -> Result<&'static str, String> {
+    match browser {
+        "edge" => Ok(EDGE_MANIFEST_NAME),
+        "chrome" => Ok(CHROME_MANIFEST_NAME),
+        other => Err(format!("不支持的浏览器：{other}")),
+    }
+}
+
+pub fn manifest_path(browser: &str) -> Result<PathBuf, String> {
     let exe = std::env::current_exe().map_err(|err| format!("获取程序路径失败：{err}"))?;
     let dir = exe.parent().ok_or_else(|| "无法获取程序目录".to_string())?;
-    Ok(dir.join(MANIFEST_NAME))
+    Ok(dir.join(manifest_file_name(browser)?))
 }
 
 fn registry_key(browser: &str) -> Result<&'static str, String> {
@@ -34,12 +43,12 @@ pub fn validate_extension_id(id: &str) -> bool {
     id.len() == 32 && id.chars().all(|ch| ('a'..='p').contains(&ch))
 }
 
-fn write_manifest(id: &str) -> Result<PathBuf, String> {
+fn write_manifest(browser: &str, id: &str) -> Result<PathBuf, String> {
     if !validate_extension_id(id) {
         return Err("扩展 ID 必须是 32 位小写字母 a-p".to_string());
     }
 
-    let path = manifest_path()?;
+    let path = manifest_path(browser)?;
     let exe = std::env::current_exe().map_err(|err| format!("获取程序路径失败：{err}"))?;
 
     let value = serde_json::json!({
@@ -50,9 +59,10 @@ fn write_manifest(id: &str) -> Result<PathBuf, String> {
         "allowed_origins": [format!("chrome-extension://{id}/")]
     });
 
-    let text = serde_json::to_string_pretty(&value)
-        .map_err(|err| format!("生成 manifest 失败：{err}"))?;
-    std::fs::write(&path, format!("{text}\n")).map_err(|err| format!("写入 manifest 失败：{err}"))?;
+    let text =
+        serde_json::to_string_pretty(&value).map_err(|err| format!("生成 manifest 失败：{err}"))?;
+    std::fs::write(&path, format!("{text}\n"))
+        .map_err(|err| format!("写入 manifest 失败：{err}"))?;
     Ok(path)
 }
 
@@ -74,8 +84,8 @@ fn run_reg(args: &[&str]) -> Result<(), String> {
 }
 
 pub fn register(browser: &str, id: &str) -> Result<(), String> {
-    let manifest = write_manifest(id)?;
     let key = registry_key(browser)?;
+    let manifest = write_manifest(browser, id)?;
     run_reg(&[
         "add",
         key,
@@ -88,7 +98,11 @@ pub fn register(browser: &str, id: &str) -> Result<(), String> {
 
 pub fn unregister(browser: &str) -> Result<(), String> {
     let key = registry_key(browser)?;
+    let manifest = manifest_path(browser)?;
     let _ = run_reg(&["delete", key, "/f"]);
+    if manifest.exists() {
+        let _ = std::fs::remove_file(manifest);
+    }
     Ok(())
 }
 
@@ -111,11 +125,17 @@ pub fn registered_extension(browser: &str) -> Option<String> {
     if !registry_has(browser) {
         return None;
     }
-    let path = manifest_path().ok()?;
+    let path = manifest_path(browser).ok()?;
     let text = std::fs::read_to_string(path).ok()?;
     let value: serde_json::Value = serde_json::from_str(&text).ok()?;
-    let origin = value.get("allowed_origins")?.as_array()?.first()?.as_str()?;
-    let id = origin.strip_prefix("chrome-extension://")?.trim_end_matches('/');
+    let origin = value
+        .get("allowed_origins")?
+        .as_array()?
+        .first()?
+        .as_str()?;
+    let id = origin
+        .strip_prefix("chrome-extension://")?
+        .trim_end_matches('/');
     if validate_extension_id(id) {
         Some(id.to_string())
     } else {
@@ -153,9 +173,7 @@ fn ensure_main_running() -> bool {
     let Ok(exe) = std::env::current_exe() else {
         return false;
     };
-    let _ = std::process::Command::new(exe)
-        .arg("--background")
-        .spawn();
+    let _ = std::process::Command::new(exe).arg("--background").spawn();
 
     for _ in 0..50 {
         std::thread::sleep(Duration::from_millis(100));
@@ -347,4 +365,30 @@ pub fn activate_existing() {
 pub fn is_http_url(url: &str) -> bool {
     let lower = url.trim().to_ascii_lowercase();
     lower.starts_with("http://") || lower.starts_with("https://")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn browsers_use_separate_manifest_files() {
+        assert_eq!(
+            manifest_file_name("edge").unwrap(),
+            "com.adm.downloader.edge.json"
+        );
+        assert_eq!(
+            manifest_file_name("chrome").unwrap(),
+            "com.adm.downloader.chrome.json"
+        );
+        assert_ne!(
+            manifest_file_name("edge").unwrap(),
+            manifest_file_name("chrome").unwrap()
+        );
+    }
+
+    #[test]
+    fn unsupported_browser_has_no_manifest() {
+        assert!(manifest_file_name("firefox").is_err());
+    }
 }
