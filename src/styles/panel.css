@@ -1,0 +1,28 @@
+/* ==========================================================================
+   卡片基础样式：所有面板共用
+   标题 12.5px 弱化文字，右上角图标按绝对定位固定在 (right-20, top-19)
+   ========================================================================== */
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.panel__title {
+  margin: 0;
+  font-size: var(--fs-card);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-muted);
+}
+
+.panel__corner {
+  position: absolute;
+  top: 19px;
+  right: 20px;
+  color: var(--text-muted);
+  pointer-events: none;
+}

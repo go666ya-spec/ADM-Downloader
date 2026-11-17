@@ -1,0 +1,23 @@
+node_modules/
+dist/
+dist-ssr/
+release/
+*.local
+.DS_Store
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# 编辑器
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.log
+
+# 浏览器扩展发布签名文件
+*.crx
+*.pem
+
+# 类型自动生成产物（保留声明文件，缓存忽略）
+src/types/auto-imports.d.ts.bak

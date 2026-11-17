@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADM 下载器</title>
+    <style id="boot-bg">
+      html,
+      body {
+        margin: 0;
+        background: #17141f;
+      }
+    </style>
+    <script>
+      /* WebView2 首帧前就用主题底色，避免白闪；主题由后端通过 URL 传入 */
+      ;(function () {
+        var theme = new URLSearchParams(location.search).get('theme')
+        if (theme === 'dark' || theme === 'light') {
+          document.documentElement.dataset.theme = theme
+        }
+        if (theme === 'light') {
+          document.getElementById('boot-bg').textContent =
+            'html,body{margin:0;background:#eaf0f6}'
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

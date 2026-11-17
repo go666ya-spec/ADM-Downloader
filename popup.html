@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>新建下载</title>
+    <style id="boot-bg">
+      html,
+      body {
+        margin: 0;
+        background: #17141f;
+        overflow: hidden;
+      }
+    </style>
+    <script>
+      ;(function () {
+        var theme = new URLSearchParams(location.search).get('theme')
+        if (theme === 'dark' || theme === 'light') {
+          document.documentElement.dataset.theme = theme
+        }
+        if (theme === 'light') {
+          document.getElementById('boot-bg').textContent =
+            'html,body{margin:0;background:#eaf0f6;overflow:hidden}'
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="popup"></div>
+    <script type="module" src="/src/popup/main.ts"></script>
+  </body>
+</html>

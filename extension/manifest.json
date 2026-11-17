@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "ADM Downloader",
+  "version": "0.1.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7uqvfTSp6D5QsLjJhCgkpob4eBgSFIIiG/z1FPVe+/4sfDI7CN4tejVUerRNWcR/4aTOeMFTHT/6TzXx51zyoj6ONqmfEgsxupMFXi3mrslCvthVgEo9cEM7/yykjGxAYDVfz1ghSlEh2rkbNpz9x1NNr6iuW6xWg2dewwj3IXFkiDPkIU0u0aDC2k1I/WXg3dqz/8NrTJAB+fFUvKf3roTdfUksmpj4fgpMMs2jtvvJ7X14/YjlP3sJFKaiTJzHHovBJ3vgnK/h0oaBwK7bj+ELs/X65Hmm1ClNXu3wC38twxTOVuINz0DCl98rOIvsLa4mJOYfxAAE7K0Ae769QQIDAQAB",
+  "description": "把浏览器下载交给 ADM 下载器",
+  "icons": {
+    "16": "icon/16.png",
+    "32": "icon/32.png",
+    "48": "icon/48.png",
+    "128": "icon/128.png"
+  },
+  "permissions": [
+    "downloads",
+    "nativeMessaging",
+    "contextMenus",
+    "cookies",
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "ADM Downloader",
+    "default_icon": {
+      "16": "icon/16.png",
+      "32": "icon/32.png",
+      "48": "icon/48.png",
+      "128": "icon/128.png"
+    }
+  }
+}

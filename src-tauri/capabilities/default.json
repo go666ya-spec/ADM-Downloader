@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "主窗口与接管窗的基础能力：拖动、最小化、最大化、关闭、事件监听",
+  "windows": ["*"],
+  "permissions": [
+    "core:default",
+    "core:path:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-is-maximized",
+    "core:window:allow-hide",
+    "core:window:allow-close"
+  ]
+}

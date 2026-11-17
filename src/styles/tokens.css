@@ -1,0 +1,229 @@
+/* ==========================================================================
+   ADM 设计令牌（Design Tokens）
+   深色为默认主题；浅色与强调色通过 <html data-theme / data-accent> 切换
+   ========================================================================== */
+
+:root,
+:root[data-theme='dark'] {
+  /* 背景层：偏紫的暗夜色，低饱和、不刺眼 */
+  --bg: #17141f;
+  --sidebar: #17141f;
+  --card: #201b2d;
+  --card-hover: #2a2438;
+  --elevated: #322b44;
+  --input: #262135;
+  --control-selected: #3b3354;
+  --sidebar-selected: #2b2539;
+
+  /* 分区靠底色差完成，默认无描边 */
+  --border: transparent;
+  --border-strong: transparent;
+  --separator: transparent;
+
+  /* 文字 */
+  --text: #f3effa;
+  --text-secondary: #b6accc;
+  --text-muted: #837a99;
+
+  /* 强调色 */
+  --accent: #3b82f6;
+  --accent-hover: #5c96f8;
+  --on-accent: #ffffff;
+
+  /* 语义色 */
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f26d6d;
+  --info: #60a5fa;
+  --upload: #a78bfa;
+  --download: var(--accent);
+
+  --shadow: rgb(0 0 0 / 45%);
+  --hairline: rgb(255 255 255 / 6%);
+}
+
+:root[data-theme='light'] {
+  /* 浅色：带蓝青的雾面底，不用纯白；侧边栏与标题栏同色 */
+  --bg: #eaf0f6;
+  --sidebar: #eaf0f6;
+  --card: #f9fbfe;
+  --card-hover: #eff4fa;
+  --elevated: #ffffff;
+  --input: #dfe8f1;
+  --control-selected: #c7d7e6;
+  --sidebar-selected: #d3e0ee;
+
+  --text: #16202c;
+  --text-secondary: #566678;
+  --text-muted: #8a98a8;
+
+  --accent-hover: #2b6fd6;
+
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --info: #2563eb;
+  --upload: #7c3aed;
+
+  --shadow: rgb(15 35 60 / 12%);
+  --hairline: rgb(15 35 60 / 8%);
+}
+
+:root[data-accent='violet'] {
+  --accent: #8b5cf6;
+  --accent-hover: #a17ef8;
+}
+:root[data-accent='emerald'] {
+  --accent: #10b981;
+  --accent-hover: #34c99a;
+}
+:root[data-accent='amber'] {
+  --accent: #f59e0b;
+  --accent-hover: #f7b23a;
+}
+:root[data-accent='rose'] {
+  --accent: #f43f5e;
+  --accent-hover: #f6657e;
+}
+
+/* ==========================================================================
+   字号阶梯：同一行内的标签与值必须使用同一级
+   ========================================================================== */
+
+:root {
+  --fs-page: 20px; /* 页面标题 */
+  --fs-title: 13px; /* 设置项标题 / 卡片内主标题 */
+  --fs-card: 12.5px; /* 卡片标题 */
+  --fs-row: 12px; /* 同一行的标签与值 */
+  --fs-note: 11px; /* 独立说明行 */
+  --fs-big: 40px; /* 仪表盘大数字 */
+  --fs-hero: 32px; /* 速率数字 */
+}
+
+/* ==========================================================================
+   几何常量：窗口、侧边栏、页头
+   ========================================================================== */
+
+:root {
+  --sidebar-width: 196px;
+  --title-bar-height: 40px;
+  --content-margin-left: 12px;
+  --content-margin-right: 12px;
+  --control-radius: 10px;
+}
+
+/* ==========================================================================
+   基础重置
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
+  font-synthesis: none;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* 每个页面：头部固定，只有内容区滚动（滚动条从头部下方开始） */
+.app-shell__content > * {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.page-scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+input,
+textarea {
+  user-select: text;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* 滚动条统一成细条，避免默认样式破坏界面 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--elevated);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--control-selected);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================================================
+   Element Plus 变量对接
+   EP 只承担交互底座（对话框、输入、虚拟表格等），视觉由本文件与自有组件统一
+   ========================================================================== */
+
+:root {
+  --el-color-primary: var(--accent);
+  --el-color-success: var(--success);
+  --el-color-warning: var(--warning);
+  --el-color-danger: var(--danger);
+  --el-color-info: var(--info);
+
+  --el-bg-color: var(--card);
+  --el-bg-color-page: var(--bg);
+  --el-bg-color-overlay: var(--elevated);
+  --el-fill-color-blank: var(--input);
+  --el-fill-color-light: var(--card-hover);
+  --el-fill-color-lighter: var(--input);
+
+  --el-text-color-primary: var(--text);
+  --el-text-color-regular: var(--text-secondary);
+  --el-text-color-secondary: var(--text-muted);
+  --el-text-color-placeholder: var(--text-muted);
+
+  --el-border-color: transparent;
+  --el-border-color-light: transparent;
+  --el-border-color-lighter: transparent;
+  --el-border-color-extra-light: transparent;
+
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 6px;
+  --el-border-radius-round: 999px;
+
+  --el-box-shadow: 0 10px 32px var(--shadow);
+  --el-box-shadow-light: 0 6px 20px var(--shadow);
+  --el-font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
+}
